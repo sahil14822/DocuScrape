@@ -17,86 +17,53 @@ if (!fs.existsSync(downloadsDir)) {
 }
 
 async function scrapeWebsite(url: string): Promise<{ title: string; content: string }> {
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox']
-  });
+  console.log('Starting scrape for URL:', url);
+  let browser;
   
   try {
+    browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
+    
     const page = await browser.newPage();
     await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
     
+    console.log('Navigating to URL...');
     await page.goto(url, { waitUntil: 'networkidle0', timeout: 30000 });
+    console.log('Page loaded successfully');
     
-    // Extract content
+    // Extract content - simplified approach to isolate the issue
+    console.log('Starting page evaluation...');
     const result = await page.evaluate(() => {
-      // Remove unwanted elements
-      const unwantedSelectors = [
-        'script', 'style', 'nav', 'header', 'footer', 
-        '.advertisement', '.ads', '.sidebar', '.menu',
-        '[class*="ad-"]', '[id*="ad-"]', '.social-media',
-        '.cookie-banner', '.popup', '.modal'
-      ];
-      
-      unwantedSelectors.forEach(selector => {
-        const elements = document.querySelectorAll(selector);
-        elements.forEach(el => el.remove());
-      });
-      
-      // Get title
-      const title = document.title || document.querySelector('h1')?.textContent || 'Untitled';
-      
-      // Try to find main content area
-      let contentElement = document.querySelector('main') ||
-                          document.querySelector('article') ||
-                          document.querySelector('[role="main"]') ||
-                          document.querySelector('.content') ||
-                          document.querySelector('#content') ||
-                          document.body;
-      
-      // Extract structured content
-      const extractContent = (element: Element): string => {
-        let content = '';
-        const walker = document.createTreeWalker(
-          element,
-          NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT,
-          null
-        );
+      try {
+        // Get title first - simplest operation
+        const title = document.title || 'Untitled';
         
-        let node;
-        while (node = walker.nextNode()) {
-          if (node.nodeType === Node.TEXT_NODE) {
-            const text = node.textContent?.trim();
-            if (text && text.length > 0) {
-              content += text + ' ';
-            }
-          } else if (node.nodeType === Node.ELEMENT_NODE) {
-            const el = node as Element;
-            const tagName = el.tagName.toLowerCase();
-            
-            if (['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].includes(tagName)) {
-              content += '\n\n' + el.textContent?.trim() + '\n';
-            } else if (tagName === 'p') {
-              content += '\n' + el.textContent?.trim() + '\n';
-            } else if (['ul', 'ol'].includes(tagName)) {
-              content += '\n';
-            } else if (tagName === 'li') {
-              content += '• ' + el.textContent?.trim() + '\n';
-            }
-          }
+        // Get basic text content
+        const body = document.body;
+        if (!body) {
+          return { title, content: 'No body element found' };
         }
         
-        return content.replace(/\n{3,}/g, '\n\n').trim();
-      };
-      
-      const content = extractContent(contentElement);
-      
-      return { title, content };
+        // Simple text extraction without complex DOM walking
+        const content = body.innerText || body.textContent || 'No content found';
+        
+        return { title, content: content.substring(0, 5000) }; // Limit content size for testing
+      } catch (error) {
+        return { title: 'Error', content: 'Error in page evaluation: ' + error.message };
+      }
     });
     
+    console.log('Page evaluation completed successfully');
     return result;
+  } catch (error) {
+    console.error('Error in scrapeWebsite:', error);
+    throw error;
   } finally {
-    await browser.close();
+    if (browser) {
+      await browser.close();
+    }
   }
 }
 

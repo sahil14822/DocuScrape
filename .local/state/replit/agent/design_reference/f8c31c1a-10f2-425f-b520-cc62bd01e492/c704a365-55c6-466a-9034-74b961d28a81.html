@@ -1,0 +1,508 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Scraper & Document Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                fontFamily: {
+                    'inter': ['Inter', 'sans-serif'],
+                    'mono': ['JetBrains Mono', 'monospace']
+                },
+                colors: {
+                    primary: {
+                        50: '#E3F2FD',
+                        100: '#BBDEFB', 
+                        500: '#2196F3',
+                        600: '#1976D2',
+                        700: '#1565C0'
+                    },
+                    success: {
+                        50: '#E8F5E8',
+                        500: '#4CAF50',
+                        600: '#2E7D32'
+                    },
+                    error: {
+                        50: '#FFEBEE',
+                        500: '#F44336',
+                        600: '#D32F2F'
+                    },
+                    warning: {
+                        50: '#FFF3E0',
+                        500: '#FF9800',
+                        600: '#F57C00'
+                    }
+                },
+                animation: {
+                    'spin-slow': 'spin 2s linear infinite',
+                    'pulse-slow': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    'fade-in': 'fadeIn 0.3s ease-in-out',
+                    'slide-up': 'slideUp 0.3s ease-out'
+                },
+                keyframes: {
+                    fadeIn: {
+                        '0%': { opacity: '0' },
+                        '100%': { opacity: '1' }
+                    },
+                    slideUp: {
+                        '0%': { transform: 'translateY(10px)', opacity: '0' },
+                        '100%': { transform: 'translateY(0)', opacity: '1' }
+                    }
+                }
+            }
+        }
+    };
+    </script>
+</head>
+
+<body class="bg-gray-50 font-inter antialiased">
+    <!-- @COMPONENT: Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-primary-600 rounded-lg p-2">
+                        <i class="fas fa-spider text-white text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-semibold text-gray-900">Web Scraper</h1>
+                        <p class="text-sm text-gray-500">Document Generator</p>
+                    </div>
+                </div>
+                
+                <div class="hidden sm:flex items-center space-x-4">
+                    <div class="text-sm text-gray-500">
+                        <i class="fas fa-shield-alt mr-1"></i>
+                        Secure & Fast
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- @END_COMPONENT: Header -->
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- @COMPONENT: MainScrapingInterface -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-2">Extract Content from Any Website</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">
+                    Enter a website URL below to scrape its content and download it as a professionally formatted PDF document.
+                </p>
+            </div>
+
+            <!-- @COMPONENT: UrlInputForm -->
+            <div class="max-w-2xl mx-auto">
+                <form class="space-y-6" data-mock="true">
+                    <!-- URL Input Field -->
+                    <div class="space-y-2">
+                        <label for="url" class="block text-sm font-medium text-gray-700">
+                            Website URL
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-link text-gray-400"></i>
+                            </div>
+                            <input 
+                                type="url" 
+                                id="url" 
+                                name="url"
+                                placeholder="https://example.com/article"
+                                value="https://techcrunch.com/2024/01/15/ai-trends"
+                                data-bind="formData.url"
+                                data-mock="true"
+                                class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm font-mono"
+                                required
+                            />
+                        </div>
+                        <p class="text-xs text-gray-500 flex items-center">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            We'll extract the main content while removing ads and navigation
+                        </p>
+                    </div>
+
+                    <!-- Format Selection -->
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-700">
+                            Output Format
+                        </label>
+                        <div class="flex space-x-4">
+                            <label class="flex items-center">
+                                <input type="radio" name="format" value="pdf" checked class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300">
+                                <span class="ml-2 text-sm text-gray-700">PDF Document</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="format" value="docx" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300">
+                                <span class="ml-2 text-sm text-gray-700">Word Document</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button 
+                            type="submit" 
+                            class="flex-1 bg-primary-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-primary-700 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors duration-200 flex items-center justify-center"
+                            data-event="click:handleScrapeSubmit"
+                            data-implementation="Should validate URL and initiate scraping process"
+                        >
+                            <i class="fas fa-download mr-2"></i>
+                            Scrape & Generate Document
+                        </button>
+                        <button 
+                            type="button" 
+                            class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200"
+                            data-event="click:handleClear"
+                        >
+                            Clear
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <!-- @END_COMPONENT: UrlInputForm -->
+
+            <!-- @STATE: isLoading:boolean = false -->
+            <!-- @COMPONENT: LoadingState -->
+            <div class="max-w-2xl mx-auto mt-8 p-6 bg-blue-50 rounded-lg border border-blue-200 animate-fade-in" data-mock="true">
+                <div class="flex items-center justify-center space-x-3 mb-4">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+                    <span class="text-lg font-medium text-primary-700">Processing your request...</span>
+                </div>
+                
+                <!-- Progress Steps -->
+                <div class="space-y-3">
+                    <div class="flex items-center space-x-3">
+                        <div class="flex-shrink-0 w-6 h-6 bg-primary-600 rounded-full flex items-center justify-center">
+                            <i class="fas fa-check text-white text-xs"></i>
+                        </div>
+                        <span class="text-sm text-gray-700">URL validated successfully</span>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <div class="flex-shrink-0 w-6 h-6 bg-primary-600 rounded-full flex items-center justify-center">
+                            <div class="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                        </div>
+                        <span class="text-sm text-gray-700">Scraping website content...</span>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <div class="flex-shrink-0 w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center">
+                            <span class="text-xs text-gray-500">3</span>
+                        </div>
+                        <span class="text-sm text-gray-500">Generating PDF document...</span>
+                    </div>
+                </div>
+
+                <div class="mt-4 bg-white rounded-lg p-3">
+                    <div class="flex justify-between text-sm text-gray-600 mb-1">
+                        <span>Progress</span>
+                        <span data-bind="progress.percentage">45%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-primary-600 h-2 rounded-full transition-all duration-300" style="width: 45%"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- @END_COMPONENT: LoadingState -->
+
+        </div>
+        <!-- @END_COMPONENT: MainScrapingInterface -->
+
+        <!-- @COMPONENT: SuccessState -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8 animate-slide-up" data-mock="true">
+            <div class="text-center">
+                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-success-50 mb-4">
+                    <i class="fas fa-check-circle text-success-600 text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Document Generated Successfully!</h3>
+                <p class="text-gray-600 mb-6">
+                    Your document has been created and is ready for download.
+                </p>
+
+                <!-- Document Preview Card -->
+                <div class="bg-gray-50 rounded-lg p-4 mb-6 max-w-md mx-auto">
+                    <div class="flex items-center space-x-3">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-file-pdf text-red-500 text-2xl"></i>
+                        </div>
+                        <div class="flex-1 text-left">
+                            <p class="font-medium text-gray-900" data-bind="document.filename">AI Trends in 2024 - TechCrunch.pdf</p>
+                            <p class="text-sm text-gray-500">
+                                <span data-bind="document.pages">12 pages</span> • 
+                                <span data-bind="document.size">2.3 MB</span> • 
+                                <span data-bind="document.created">Generated 2 minutes ago</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Download Actions -->
+                <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                    <button 
+                        class="bg-success-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-success-700 focus:ring-2 focus:ring-success-500 focus:ring-offset-2 transition-colors duration-200 flex items-center justify-center"
+                        data-event="click:handleDownload"
+                        data-implementation="Should trigger file download"
+                    >
+                        <i class="fas fa-download mr-2"></i>
+                        Download PDF
+                    </button>
+                    <button 
+                        class="bg-gray-100 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-200 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200 flex items-center justify-center"
+                        data-event="click:handlePreview"
+                    >
+                        <i class="fas fa-eye mr-2"></i>
+                        Preview
+                    </button>
+                    <button 
+                        class="text-primary-600 px-6 py-3 rounded-lg font-medium hover:bg-primary-50 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors duration-200"
+                        data-event="click:handleNewScrape"
+                    >
+                        Scrape Another URL
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: SuccessState -->
+
+        <!-- @COMPONENT: RecentDocuments -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-semibold text-gray-900">Recent Documents</h3>
+                <button class="text-primary-600 hover:text-primary-700 text-sm font-medium">
+                    View All
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                <!-- @MAP: recentDocuments.map(doc => ( -->
+                <div class="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 transition-colors duration-200">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-file-pdf text-red-500 text-xl"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="font-medium text-gray-900 truncate" data-mock="true">
+                            Understanding Machine Learning - MIT Blog.pdf
+                        </p>
+                        <p class="text-sm text-gray-500">
+                            <span data-mock="true">mit.edu</span> • 
+                            <span data-mock="true">8 pages</span> • 
+                            <span data-mock="true">3 hours ago</span>
+                        </p>
+                    </div>
+                    <div class="flex-shrink-0 flex items-center space-x-2">
+                        <button class="text-gray-400 hover:text-primary-600 transition-colors duration-200">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button class="text-gray-400 hover:text-red-600 transition-colors duration-200">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 transition-colors duration-200">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-file-pdf text-red-500 text-xl"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="font-medium text-gray-900 truncate" data-mock="true">
+                            The Future of Work - Harvard Business Review.pdf
+                        </p>
+                        <p class="text-sm text-gray-500">
+                            <span data-mock="true">hbr.org</span> • 
+                            <span data-mock="true">15 pages</span> • 
+                            <span data-mock="true">Yesterday</span>
+                        </p>
+                    </div>
+                    <div class="flex-shrink-0 flex items-center space-x-2">
+                        <button class="text-gray-400 hover:text-primary-600 transition-colors duration-200">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button class="text-gray-400 hover:text-red-600 transition-colors duration-200">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 transition-colors duration-200">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-file-word text-blue-500 text-xl"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="font-medium text-gray-900 truncate" data-mock="true">
+                            Climate Change Research - Nature.docx
+                        </p>
+                        <p class="text-sm text-gray-500">
+                            <span data-mock="true">nature.com</span> • 
+                            <span data-mock="true">22 pages</span> • 
+                            <span data-mock="true">2 days ago</span>
+                        </p>
+                    </div>
+                    <div class="flex-shrink-0 flex items-center space-x-2">
+                        <button class="text-gray-400 hover:text-primary-600 transition-colors duration-200">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button class="text-gray-400 hover:text-red-600 transition-colors duration-200">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- @END_MAP )) -->
+            </div>
+        </div>
+        <!-- @END_COMPONENT: RecentDocuments -->
+
+    </main>
+
+    <!-- @COMPONENT: ErrorToast -->
+    <div id="error-toast" class="fixed top-4 right-4 bg-white border-l-4 border-error-600 rounded-lg shadow-lg p-4 max-w-md transform translate-x-full transition-transform duration-300" data-mock="true">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <i class="fas fa-exclamation-circle text-error-600 text-xl"></i>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm font-medium text-gray-900">
+                    Scraping Failed
+                </p>
+                <p class="mt-1 text-sm text-gray-600" data-mock="true">
+                    Unable to access the website. Please check the URL and try again.
+                </p>
+            </div>
+            <div class="ml-auto pl-3">
+                <button class="text-gray-400 hover:text-gray-600" data-event="click:closeToast">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: ErrorToast -->
+
+    <!-- @COMPONENT: Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-16">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h4 class="font-semibold text-gray-900 mb-3">Features</h4>
+                    <ul class="text-sm text-gray-600 space-y-2">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-success-600 mr-2"></i>
+                            Smart content extraction
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-success-600 mr-2"></i>
+                            Multiple output formats
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-success-600 mr-2"></i>
+                            Professional formatting
+                        </li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-gray-900 mb-3">Security</h4>
+                    <ul class="text-sm text-gray-600 space-y-2">
+                        <li class="flex items-center">
+                            <i class="fas fa-shield-alt text-primary-600 mr-2"></i>
+                            Secure processing
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-trash text-primary-600 mr-2"></i>
+                            Auto file cleanup
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-lock text-primary-600 mr-2"></i>
+                            No data storage
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-semibold text-gray-900 mb-3">Support</h4>
+                    <ul class="text-sm text-gray-600 space-y-2">
+                        <li>
+                            <i class="fas fa-question-circle mr-2"></i>
+                            Help & Documentation
+                        </li>
+                        <li>
+                            <i class="fas fa-envelope mr-2"></i>
+                            Contact Support
+                        </li>
+                        <li>
+                            <i class="fas fa-bug mr-2"></i>
+                            Report Issues
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-200 mt-8 pt-8 text-center">
+                <p class="text-sm text-gray-600">
+                    © 2024 Web Scraper & Document Generator. Built with modern web technologies.
+                </p>
+            </div>
+        </div>
+    </footer>
+    <!-- @END_COMPONENT: Footer -->
+
+    <script>
+    // TODO: Implement business logic, API calls, and state management
+    
+    (function() {
+        // Form interaction handlers
+        const urlInput = document.getElementById('url');
+        const form = document.querySelector('form');
+        
+        // URL validation
+        function validateUrl(url) {
+            try {
+                new URL(url);
+                return url.startsWith('http://') || url.startsWith('https://');
+            } catch {
+                return false;
+            }
+        }
+        
+        // Visual feedback for URL validation
+        if (urlInput) {
+            urlInput.addEventListener('input', function() {
+                const isValid = validateUrl(this.value);
+                if (this.value && !isValid) {
+                    this.classList.add('border-error-500', 'focus:ring-error-500', 'focus:border-error-500');
+                    this.classList.remove('border-gray-300', 'focus:ring-primary-500', 'focus:border-primary-500');
+                } else {
+                    this.classList.remove('border-error-500', 'focus:ring-error-500', 'focus:border-error-500');
+                    this.classList.add('border-gray-300', 'focus:ring-primary-500', 'focus:border-primary-500');
+                }
+            });
+        }
+
+        // Toast notification system
+        function showToast(message, type = 'error') {
+            const toast = document.getElementById('error-toast');
+            if (toast) {
+                toast.classList.remove('translate-x-full');
+                setTimeout(() => {
+                    toast.classList.add('translate-x-full');
+                }, 5000);
+            }
+        }
+
+        // Toggle loading states (for demo purposes)
+        let isLoading = false;
+        function toggleLoadingState() {
+            isLoading = !isLoading;
+            // In real implementation, this would control component visibility
+            console.log('Loading state:', isLoading);
+        }
+    })();
+    </script>
+
+</body>
+</html>
