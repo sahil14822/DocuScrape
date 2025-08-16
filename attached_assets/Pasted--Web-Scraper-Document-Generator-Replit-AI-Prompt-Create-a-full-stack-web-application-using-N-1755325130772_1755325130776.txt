@@ -1,0 +1,154 @@
+# Web Scraper & Document Generator - Replit AI Prompt
+
+Create a full-stack web application using Node.js backend and React frontend that allows users to scrape website content and download it as a formatted document.
+
+## Requirements:
+
+### Frontend (React):
+- Modern React component-based UI
+- URL input field with validation
+- Submit button to start scraping
+- Loading spinner/progress indicator while scraping
+- Download button that appears after successful scraping
+- Error handling with user-friendly messages
+- Responsive design using CSS modules or styled-components
+- Clean, intuitive user interface
+
+### Backend (Node.js + Express):
+- Express.js server with proper routing
+- Web scraping using Puppeteer or Cheerio
+- Content extraction that captures:
+  - Page title and meta information
+  - Main text content (paragraphs, headings, lists)
+  - Remove advertisements, navigation, and irrelevant content
+  - Preserve basic formatting structure
+- Document generation in PDF or DOCX format
+- File serving endpoints for downloads
+- Input validation and URL sanitization
+- Comprehensive error handling
+- CORS configuration for React frontend
+
+### Technical Stack:
+- **Backend:** Node.js + Express.js
+- **Frontend:** React (with hooks)
+- **Scraping:** Puppeteer (for dynamic content) or Cheerio (for static HTML)
+- **Document Generation:** 
+  - PDFKit or jsPDF for PDF generation
+  - officegen or docx for Word documents
+- **File Handling:** multer and fs for file operations
+- **HTTP Client:** axios for API calls
+
+### Required NPM Packages:
+```json
+{
+  "backend": [
+    "express",
+    "cors",
+    "puppeteer",
+    "cheerio",
+    "pdfkit",
+    "docx",
+    "axios",
+    "helmet"
+  ],
+  "frontend": [
+    "react",
+    "react-dom",
+    "axios"
+  ]
+}
+```
+
+### Key Features:
+1. URL validation and security checks
+2. Intelligent content extraction (main article/content detection)
+3. Content cleaning (remove scripts, ads, navigation, footers)
+4. Preserve formatting (headings, paragraphs, lists, bold/italic)
+5. Multiple output formats (PDF, DOCX)
+6. Automatic filename generation based on page title
+7. Real-time progress updates
+8. Download progress tracking
+9. Error handling for failed requests or invalid URLs
+
+### File Structure:
+```
+/
+├── backend/
+│   ├── server.js
+│   ├── routes/
+│   │   └── scraper.js
+│   ├── utils/
+│   │   ├── scraper.js
+│   │   └── documentGenerator.js
+│   ├── downloads/
+│   └── package.json
+├── frontend/
+│   ├── public/
+│   │   └── index.html
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── UrlInput.js
+│   │   │   ├── LoadingSpinner.js
+│   │   │   └── DownloadButton.js
+│   │   ├── App.js
+│   │   ├── App.css
+│   │   └── index.js
+│   └── package.json
+└── README.md
+```
+
+### API Endpoints:
+- `POST /api/scrape` - Accept URL and return scraped content
+- `GET /api/download/:filename` - Serve generated documents
+- `GET /api/status/:jobId` - Check scraping progress (optional)
+
+### React Component Structure:
+- **App.js** - Main application container
+- **UrlInput.js** - URL input form with validation
+- **LoadingSpinner.js** - Loading state component
+- **DownloadButton.js** - Download functionality
+- **ErrorMessage.js** - Error display component
+
+### Implementation Details:
+- Use React hooks (useState, useEffect) for state management
+- Implement proper error boundaries in React
+- Use Puppeteer for JavaScript-heavy sites or Cheerio for simple HTML
+- Generate unique filenames to avoid conflicts
+- Implement file cleanup after download
+- Add request timeout and retry logic
+- Use helmet for basic security headers
+- Implement rate limiting to prevent abuse
+
+### Content Extraction Strategy:
+1. Remove unwanted elements (nav, footer, ads, scripts)
+2. Identify main content area using heuristics
+3. Extract text while preserving structure
+4. Clean and format content for document generation
+5. Handle different website layouts gracefully
+
+### Document Generation Features:
+- Professional formatting with proper margins
+- Include website URL and scrape date
+- Preserve heading hierarchy
+- Handle special characters and encoding
+- Add table of contents for longer documents
+- Include basic styling (fonts, spacing)
+
+### Example User Flow:
+1. User enters URL in React input field
+2. Frontend validates URL format
+3. POST request sent to Node.js backend
+4. Backend scrapes content using Puppeteer/Cheerio
+5. Content is processed and document generated
+6. Frontend receives success response with download link
+7. User clicks download button to get formatted document
+
+### Error Handling:
+- Invalid URL format validation
+- Network timeout handling
+- Scraping failure scenarios
+- Document generation errors
+- File serving errors
+- User-friendly error messages for all failure cases
+
+Please create a complete, production-ready application with clean code architecture, proper error handling, and an intuitive user interface. Include detailed comments explaining the scraping logic and document generation process.
